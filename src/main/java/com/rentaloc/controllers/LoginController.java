@@ -34,13 +34,15 @@ public class LoginController {
     @PostMapping("api/auth/login")
     public ResponseEntity<String> login(@RequestBody @Valid Users user) {
 
+        System.out.println(user.getEmail());
+        System.out.println(user.getPassword());
         try {
             Authentication authenticate = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
             User autendicatedUser = (User) authenticate.getPrincipal();
 
-            String token = jwtService.generateToken(autendicatedUser);
+            String token = jwtService.generateToken(authenticate);
             //logger.info("Token is : " + token);
 
             return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, token)
