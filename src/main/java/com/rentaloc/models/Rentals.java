@@ -1,9 +1,9 @@
 package com.rentaloc.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Rentals {
@@ -11,6 +11,14 @@ public class Rentals {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @ManyToOne(fetch=FetchType.LAZY,
+            cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "owner_id", referencedColumnName="id")
+    private Users users;
+
+    @OneToMany(mappedBy = "rentals")
+    private List<Messages> messagesList = new ArrayList<>();
 
     private String name;
 

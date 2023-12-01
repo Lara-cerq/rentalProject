@@ -1,9 +1,6 @@
 package com.rentaloc.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 
@@ -13,6 +10,16 @@ public class Messages {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @ManyToOne(fetch=FetchType.LAZY,
+            cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "user_id", referencedColumnName="id")
+    private Users users;
+
+    @ManyToOne(fetch=FetchType.LAZY,
+            cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "rental_id", referencedColumnName="id")
+    private Rentals rentals;
 
     private String message;
 

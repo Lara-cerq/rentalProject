@@ -12,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,4 +54,14 @@ public class LoginController {
 //        String token = jwtService.generateToken(authentication);
 //        return token;
 //    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register() {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<String> getMe() {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
 }

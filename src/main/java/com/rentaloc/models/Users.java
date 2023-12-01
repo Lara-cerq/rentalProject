@@ -3,6 +3,8 @@ package com.rentaloc.models;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Users {
@@ -20,6 +22,12 @@ public class Users {
     private Timestamp created_at;
 
     private Timestamp updated_at;
+
+    @OneToMany(mappedBy = "users")
+    List<Rentals> rentalsList=new ArrayList<>();
+
+    @OneToMany (mappedBy = "users")
+    List<Messages> messagesList=new ArrayList<>();
 
     public Integer getId() {
         return id;

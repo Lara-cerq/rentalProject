@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RentalsService {
@@ -14,8 +15,20 @@ public class RentalsService {
     @Autowired
     RentalsRepository rentalsRepository;
 
-    public List<Rentals> getAllRentals() {
+    public Iterable<Rentals> getAllRentals() {
         return rentalsRepository.findAll();
+    }
+
+    public Optional<Rentals> getById(Integer id) {
+        return rentalsRepository.findRentalById(id);
+    }
+
+    public Rentals addRental(Rentals rental) {
+        return rentalsRepository.save(rental);
+    }
+
+    public Rentals updateRental (Rentals rental) {
+        return rentalsRepository.save(rental);
     }
 
 }
