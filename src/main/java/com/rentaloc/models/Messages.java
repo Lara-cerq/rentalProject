@@ -68,4 +68,20 @@ public class Messages {
     public void setUpdated_at(Timestamp updated_at) {
         this.updated_at = updated_at;
     }
+
+    public Users getUsers() {
+        return users;
+    }
+
+    public Rentals getRentals() {
+        return rentals;
+    }
+
+    public void setUsers(Users users) {
+        this.users = users;
+    }
+
+    public void setRentals(Rentals rentals) {
+        this.rentals = rentals;
+    }
 }

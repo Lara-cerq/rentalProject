@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RessourceController {
 
     @GetMapping("/")
+    // il faut utiliser barer token et mettre le token qui est généré avec authentification
     public String getResource() {
         return "a value...";
     }
