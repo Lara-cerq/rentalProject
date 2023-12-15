@@ -11,12 +11,12 @@ public class Messages {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch=FetchType.LAZY,
+    @ManyToOne(
             cascade=CascadeType.PERSIST)
     @JoinColumn(name = "user_id", referencedColumnName="id")
     private Users users;
 
-    @ManyToOne(fetch=FetchType.LAZY,
+    @ManyToOne(
             cascade=CascadeType.PERSIST)
     @JoinColumn(name = "rental_id", referencedColumnName="id")
     private Rentals rentals;

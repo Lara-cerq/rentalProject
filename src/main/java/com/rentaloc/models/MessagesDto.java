@@ -2,11 +2,9 @@ package com.rentaloc.models;
 
 public class MessagesDto {
 
-    String message;
-
-    Integer user_id;
-
     Integer rental_id;
+    Integer user_id;
+    String message;
 
     public String getMessage() {
         return message;

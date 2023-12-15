@@ -1,16 +1,13 @@
 package com.rentaloc.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-public class Rentals {
+public class RentalsFormData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String name;
@@ -19,37 +16,14 @@ public class Rentals {
 
     private Double price;
 
-    private String picture;
+    private MultipartFile picture;
 
-    @Size(max = 65555)
     private String description;
 
-    @ManyToOne(cascade=CascadeType.PERSIST)
-    @JoinColumn(name = "owner_id", referencedColumnName="id")
-    private Users users;
-
-    @OneToMany(mappedBy = "rentals")
-    private List<Messages> messagesList = new ArrayList<>();
-
-    @Transient
-    public String getPicuresImagePath() {
-        if (picture == null || id == null) return null;
-
-        return "/rental-photos/" + id + "/" + picture;
+    public RentalsFormData() {
     }
 
-    public Users getUsers() {
-        return users;
-    }
-
-    public void setUsers(Users users) {
-        this.users = users;
-    }
-
-    public Rentals() {
-    }
-
-    public Rentals(Integer id, String name, Double surface, Double price, String picture, String description) {
+    public RentalsFormData(Integer id, String name, Double surface, Double price, MultipartFile picture, String description) {
         this.id = id;
         this.name = name;
         this.surface = surface;
@@ -90,11 +64,11 @@ public class Rentals {
         this.price = price;
     }
 
-    public String getPicture() {
+    public MultipartFile getPicture() {
         return picture;
     }
 
-    public void setPicture(String picture) {
+    public void setPicture(MultipartFile picture) {
         this.picture = picture;
     }
 
