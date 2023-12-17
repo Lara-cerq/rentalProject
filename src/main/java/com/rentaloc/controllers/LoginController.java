@@ -1,8 +1,6 @@
 package com.rentaloc.controllers;
 
-import com.rentaloc.models.LoginRequest;
-import com.rentaloc.models.LoginResponse;
-import com.rentaloc.models.Users;
+import com.rentaloc.models.*;
 import com.rentaloc.services.JWTService;
 import com.rentaloc.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +33,7 @@ public class LoginController {
 
     //Login Request permet de renvoyer le login et password dans le body du post
     @PostMapping("api/auth/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest user) {
+    public LoginResponse login(@RequestBody LoginRequest user) {
         try {
             Authentication authenticate = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
@@ -47,16 +45,15 @@ public class LoginController {
             LoginResponse response = new LoginResponse();
             response.setToken(token);
 
-            return ResponseEntity.ok()
-                    .body(response);
+            return response;
 
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return null;
         }
     }
 
     @GetMapping("api/auth/me")
-    ResponseEntity<Users> getUser( ) {
+    public Users getUser( ) {
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -76,23 +73,37 @@ public class LoginController {
 //
 //            Users userLogged= usersService.findUserByEmail(email);
 
-            return ResponseEntity.ok()
-                    .body(userLogged);
+            return userLogged;
 
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return null;
         }
     }
 
     @PostMapping("api/auth/register")
-    ResponseEntity<Users> addNeuwUser(@RequestBody Users userRental) {
+    public LoginResponse addNeuwUser(@RequestBody RegisterRequest userRental) {
         try {
 //            String password = userRental.getPassword();
 //            String encriptedPassword=
-            usersService.addNewUser(userRental);
-            return ResponseEntity.status(HttpStatus.OK).build();
+            Users user= new Users();
+            user.setEmail(userRental.getEmail());
+            user.setName(userRental.getName());
+            user.setPassword(userRental.getPassword());
+            usersService.addNewUser(user);
+
+            Authentication authenticate = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+
+            User autendicatedUser = (User) authenticate.getPrincipal();
+
+            String token = jwtService.generateToken(authenticate);
+            // login response permet de donner la réponse dans le body avec le format que l'on veut avec "token" : "le code du token"
+            LoginResponse response = new LoginResponse();
+            response.setToken(token);
+
+            return response;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return null;
         }
     }
 

@@ -29,7 +29,7 @@ public class MessagesController {
     private RentalsService rentalsService;
 
     @RequestMapping(value="/api/messages/", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<Response> addMessages(@RequestBody MessagesDto messages) {
+    public Response addMessages(@RequestBody MessagesDto messages) {
         try {
 
             Messages messageNew= new Messages();
@@ -40,16 +40,13 @@ public class MessagesController {
 
             messagesService.addMessages(messageNew);
 
-//            Response response = new Response();
-//            response.setMessage("Message send with success");
-            return ResponseEntity.ok()
-                    .body(new Response("Message send with success"));
+           Response response = new Response("Message send with success");
+            return response;
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return new Response("");
 
         } catch (Exception ex) {
-            System.out.println(ex);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return new Response("");
         }
     }
 

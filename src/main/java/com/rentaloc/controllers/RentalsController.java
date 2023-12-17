@@ -36,27 +36,25 @@ public class RentalsController {
     UsersService usersService;
 
     @GetMapping("api/rentals")
-    public ResponseEntity<RentalsResponse>getAllRentals() {
+    public RentalsResponse getAllRentals() {
         try {
             List<Rentals> rentalsList = rentalsService.getAllRentals();
 
-            return ResponseEntity.ok()
-                    .body(new RentalsResponse(rentalsList));
+            return new RentalsResponse(rentalsList);
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return null;
         }
     }
 
     @GetMapping("api/rentals/{id}")
-    public ResponseEntity<Rentals> getRentalById(@PathVariable("id") Integer id) {
+    public Rentals getRentalById(@PathVariable("id") Integer id) {
 
         try {
             Rentals rentals= rentalsService.getById(id).get();;
 
-            return ResponseEntity.ok()
-                    .body(rentals);
+            return rentals;
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return null;
         }
     }
 
@@ -70,7 +68,7 @@ public class RentalsController {
     }
 
     @RequestMapping(value = "api/rentals", method = RequestMethod.POST)
-    public ResponseEntity<Response> saveRentals(RentalsFormData rental){
+    public Response saveRentals(@ModelAttribute RentalsFormData rental){
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             Users userLogged= usersService.findUserByEmail(auth.getName());
@@ -79,7 +77,7 @@ public class RentalsController {
 //            String fileName = StringUtils.cleanPath(picture.getOriginalFilename());
 //            rental.setPicture(fileName);
 
-            Path publicDirectory = Paths.get("rental", "picture").toAbsolutePath();
+            Path publicDirectory = Paths.get( "picture").toAbsolutePath();
             byte[] imageContent = rental.getPicture().getBytes();
             Path filepath = Paths.get(publicDirectory.toString(), rental.getPicture().getOriginalFilename());
             try (OutputStream os = Files.newOutputStream(filepath)) {
@@ -103,11 +101,10 @@ public class RentalsController {
 
 
             System.out.println(filepath.toString());
- //           Response response = new Response();
-  //          response.setMessage("Rental created!");
-            return ResponseEntity.ok().body(new Response("Rental created!"));
+            Response response = new Response("Rental created!");
+            return response;
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return new Response("");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -123,7 +120,7 @@ public class RentalsController {
 //    }
 
     @PutMapping("api/rentals/{id}")
-    public ResponseEntity<Response> updateRentals(@PathVariable(required = true, name = "id") Integer id, @RequestBody Rentals rentalDetails) {
+    public Response updateRentals(@PathVariable(required = true, name = "id") Integer id, @RequestBody Rentals rentalDetails) {
 
         try {
 
@@ -136,11 +133,9 @@ public class RentalsController {
 
             rentalsService.updateRental(updateRental);
 
-//            Response response = new Response();
- //           response.setMessage("Rental updated!");
-            return ResponseEntity.ok().body(new Response("Rental updated!"));
+            return new Response("Rental updated!");
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return new Response("");
         }
     }
 }
