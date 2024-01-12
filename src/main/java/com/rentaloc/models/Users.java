@@ -88,4 +88,12 @@ public class Users {
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
+
+    public Users(Integer id, String email, String name, Timestamp created_at, Timestamp updated_at) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+    }
 }

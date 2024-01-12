@@ -8,7 +8,17 @@ public class Response {
         this.message = message;
     }
 
+
     public Response(String message) {
         this.message = message;
+    }
+
+    public Response() {
+    }
+
+    @Override
+    public String toString() {
+        return
+               "{" + '\"' + "message" + '\"' + ": " + '\"' + message + '\"' + "}";
     }
 }

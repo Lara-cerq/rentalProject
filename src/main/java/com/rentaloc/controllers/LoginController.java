@@ -5,6 +5,7 @@ import com.rentaloc.services.JWTService;
 import com.rentaloc.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,7 +13,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.MessageDigest;
 
 
 @RestController
@@ -52,56 +56,58 @@ public class LoginController {
         }
     }
 
-    @GetMapping("api/auth/me")
-    public Users getUser( ) {
+    @RequestMapping(value="api/auth/me", method = RequestMethod.GET, produces =  { "application/json" })
+    public UserResponse getUser( ) {
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
             Users userLogged= usersService.findUserByEmail(auth.getName());
 
-            //Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-            //for (SimpleGrantedAuthority authority : authorities)
-           // {
-               // roles.add(authority.getAuthority());
-            //}
-            //userReturnData.setRoles(roles);
-
-//            User autendicatedUser = (User) authentication.getCredentials();
-//
-//            String email= autendicatedUser.getUsername();
-//
-//            Users userLogged= usersService.findUserByEmail(email);
-
-            return userLogged;
+            UserResponse user= new UserResponse();
+            user.setId(userLogged.getId());
+            user.setName(userLogged.getName());
+            user.setEmail(userLogged.getEmail());
+            user.setCreated_at(userLogged.getCreated_at());
+            user.setUpdated_at(userLogged.getUpdated_at());
+            return user;
 
         } catch (BadCredentialsException ex) {
             return null;
         }
     }
 
-    @PostMapping("api/auth/register")
+    @RequestMapping(value = "api/auth/register", method = RequestMethod.POST, produces =  { "application/json" } )
     public LoginResponse addNeuwUser(@RequestBody RegisterRequest userRental) {
-        try {
-//            String password = userRental.getPassword();
-//            String encriptedPassword=
-            Users user= new Users();
-            user.setEmail(userRental.getEmail());
-            user.setName(userRental.getName());
-            user.setPassword(userRental.getPassword());
-            usersService.addNewUser(user);
+       try {
+            if ( usersService.findUserByEmail(userRental.getEmail()) ==null ) {
 
-            Authentication authenticate = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+                String password = userRental.getPassword();
+                String encryptedPassword;
 
-            User autendicatedUser = (User) authenticate.getPrincipal();
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                encryptedPassword = encoder.encode(password);
 
-            String token = jwtService.generateToken(authenticate);
-            // login response permet de donner la réponse dans le body avec le format que l'on veut avec "token" : "le code du token"
-            LoginResponse response = new LoginResponse();
-            response.setToken(token);
+                Users user = new Users();
+                user.setEmail(userRental.getEmail());
+                user.setName(userRental.getName());
+                user.setPassword(encryptedPassword);
+                usersService.addNewUser(user);
 
-            return response;
+                Authentication authenticate = authenticationManager
+                        .authenticate(new UsernamePasswordAuthenticationToken(userRental.getEmail(), userRental.getPassword()));
+
+                User autendicatedUser = (User) authenticate.getPrincipal();
+
+                String token = jwtService.generateToken(authenticate);
+
+                LoginResponse response = new LoginResponse();
+                response.setToken(token);
+
+                return response;
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             return null;
         }

@@ -3,7 +3,6 @@ package com.rentaloc.models;
 public class RegisterRequest {
 
     private String email;
-
     private String name;
     private String password;
 
@@ -26,7 +25,6 @@ public class RegisterRequest {
     public String getPassword() {
         return password;
     }
-
 
     public void setPassword(String password) {
         this.password = password;

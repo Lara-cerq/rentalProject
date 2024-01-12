@@ -1,6 +1,6 @@
 package com.rentaloc.models;
 
-public class MessagesDto {
+public class MessagesRequest {
 
     Integer rental_id;
     Integer user_id;

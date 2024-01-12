@@ -46,36 +46,33 @@ public class RentalsController {
         }
     }
 
-    @GetMapping("api/rentals/{id}")
-    public Rentals getRentalById(@PathVariable("id") Integer id) {
+    @GetMapping(value = "api/rentals/{id}", produces =  { "application/json" })
+    public RentalToDisplay getRentalById(@PathVariable("id") Integer id) {
 
         try {
-            Rentals rentals= rentalsService.getById(id).get();;
+            Rentals rentals= rentalsService.getById(id).get();
 
-            return rentals;
+            RentalToDisplay rentalToDisplay= new RentalToDisplay();
+            rentalToDisplay.setId(rentals.getId());
+            rentalToDisplay.setName(rentals.getName());
+            rentalToDisplay.setPrice(rentals.getPrice());
+            rentalToDisplay.setSurface(rentals.getSurface());
+            rentalToDisplay.setPicture(rentals.getPicture());
+            rentalToDisplay.setDescription(rentals.getDescription());
+            rentalToDisplay.setOwner_id(rentals.getUsers().getId());
+            rentalToDisplay.setCreated_at(rentals.getUsers().getCreated_at());
+            rentalToDisplay.setUpdated_at(rentals.getUsers().getUpdated_at());
+            return rentalToDisplay;
         } catch (BadCredentialsException ex) {
             return null;
         }
     }
 
-    @GetMapping("/rentals/create")
-    public String addRentalsForm(Rentals rentals) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        Users userLogged= usersService.findUserByEmail(auth.getName());
-        Integer id= userLogged.getId();
-        return "api/rentals/"+ id;
-    }
-
-    @RequestMapping(value = "api/rentals", method = RequestMethod.POST)
-    public Response saveRentals(@ModelAttribute RentalsFormData rental){
+    @RequestMapping(value = "api/rentals", method = RequestMethod.POST, produces =  { "application/json" })
+    public String saveRentals(@ModelAttribute RentalsFormData rental){
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             Users userLogged= usersService.findUserByEmail(auth.getName());
-            //rental.setUsers(userLogged);
-
-//            String fileName = StringUtils.cleanPath(picture.getOriginalFilename());
-//            rental.setPicture(fileName);
 
             Path publicDirectory = Paths.get( "picture").toAbsolutePath();
             byte[] imageContent = rental.getPicture().getBytes();
@@ -94,17 +91,10 @@ public class RentalsController {
 
             rentalsService.addRental(rentalNew);
 
-//            String uploadDir = "rental-photos/" + rentalSaved.getId();
-//
-//            FileUploadUtil.saveFile(uploadDir, fileName, picture);
-
-
-
-            System.out.println(filepath.toString());
             Response response = new Response("Rental created!");
-            return response;
+            return response.toString();
         } catch (BadCredentialsException ex) {
-            return new Response("");
+            return ("");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -119,23 +109,22 @@ public class RentalsController {
 //        return Files.readAllBytes(imagePath);
 //    }
 
-    @PutMapping("api/rentals/{id}")
-    public Response updateRentals(@PathVariable(required = true, name = "id") Integer id, @RequestBody Rentals rentalDetails) {
+    @RequestMapping(value="api/rentals/{id}", method= RequestMethod.PUT, produces =  { "application/json" })
+    public String updateRentals(@PathVariable(required = true, name = "id") Integer id, @ModelAttribute RentalsForUpdateFormData rentalDetails) {
 
         try {
 
             Rentals updateRental = rentalsService.getById(id).get();
             updateRental.setName(rentalDetails.getName());
             updateRental.setDescription(rentalDetails.getDescription());
-            updateRental.setPicture(rentalDetails.getPicture());
             updateRental.setPrice(rentalDetails.getPrice());
             updateRental.setSurface(rentalDetails.getSurface());
 
             rentalsService.updateRental(updateRental);
-
-            return new Response("Rental updated!");
+            Response response= new Response("Rental updated!");
+            return response.toString();
         } catch (BadCredentialsException ex) {
-            return new Response("");
+            return "";
         }
     }
 }
