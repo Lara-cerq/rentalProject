@@ -3,6 +3,10 @@ package com.rentaloc.controllers;
 import com.rentaloc.models.*;
 import com.rentaloc.services.JWTService;
 import com.rentaloc.services.UsersService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +25,8 @@ import java.security.MessageDigest;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200/")
+@RequestMapping("/api/auth")
+@Tag(name = "Auth", description = "Contains the operations that allows to login, register an user and get informations of user logged.")
 public class LoginController {
 
     private JWTService jwtService;
@@ -36,8 +42,8 @@ public class LoginController {
     }
 
     //Login Request permet de renvoyer le login et password dans le body du post
-    @PostMapping("api/auth/login")
-    public LoginResponse login(@RequestBody LoginRequest user) {
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest user) {
         try {
             Authentication authenticate = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
@@ -49,14 +55,15 @@ public class LoginController {
             LoginResponse response = new LoginResponse();
             response.setToken(token);
 
-            return response;
+            return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException ex) {
-            return null;
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
-    @RequestMapping(value="api/auth/me", method = RequestMethod.GET, produces =  { "application/json" })
+    @RequestMapping(value="/me", method = RequestMethod.GET, produces =  { "application/json" })
     public UserResponse getUser( ) {
         try {
 
@@ -77,7 +84,7 @@ public class LoginController {
         }
     }
 
-    @RequestMapping(value = "api/auth/register", method = RequestMethod.POST, produces =  { "application/json" } )
+    @RequestMapping(value = "/register", method = RequestMethod.POST, produces =  { "application/json" } )
     public LoginResponse addNeuwUser(@RequestBody RegisterRequest userRental) {
        try {
             if ( usersService.findUserByEmail(userRental.getEmail()) ==null ) {

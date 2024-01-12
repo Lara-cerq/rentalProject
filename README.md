@@ -18,4 +18,4 @@ This project was generated with Java 17.
 > `Run application`
 
 ### Swagger
-> Project is doccumented by Swagger : 
+> Project is doccumented by Swagger : http://localhost:3001/swagger-ui/index.html

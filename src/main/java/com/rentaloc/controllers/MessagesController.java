@@ -6,12 +6,16 @@ import com.rentaloc.models.Response;
 import com.rentaloc.services.MessagesService;
 import com.rentaloc.services.RentalsService;
 import com.rentaloc.services.UsersService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200/")
+@Tag(name = "Messages", description = "Contains the operation that allow to add a new message")
+@SecurityRequirement(name = "Bearer Authentication")
 public class MessagesController {
 
     @Autowired

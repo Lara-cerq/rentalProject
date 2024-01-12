@@ -2,6 +2,8 @@ package com.rentaloc.controllers;
 
 import com.rentaloc.models.*;
 import com.rentaloc.services.UsersService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200/")
+@Tag(name = "Users", description = "Contains an operation that allows to informations of user.")
+@SecurityRequirement(name = "Bearer Authentication")
 public class UsersController {
 
     @Autowired

@@ -1,21 +1,16 @@
 package com.rentaloc.controllers;
 
-import ch.qos.logback.classic.util.CopyOnInheritThreadLocal;
-import com.rentaloc.configuration.FileUploadUtil;
 import com.rentaloc.models.*;
 import com.rentaloc.services.RentalsService;
 import com.rentaloc.services.UsersService;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,10 +18,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200/")
+@Tag(name = "Rentals", description = "Contains the operations that allows add or update a rental and get informations")
+@SecurityRequirement(name = "Bearer Authentication")
 public class RentalsController {
 
     @Autowired
