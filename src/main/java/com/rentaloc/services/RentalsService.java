@@ -19,7 +19,7 @@ public class RentalsService {
         return rentalsRepository.findAll();
     }
 
-    public Optional<Rentals> getById(Integer id) {
+    public Rentals getById(Integer id) {
         return rentalsRepository.findRentalById(id);
     }
 

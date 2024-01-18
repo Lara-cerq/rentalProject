@@ -3,13 +3,8 @@ package com.rentaloc.controllers;
 import com.rentaloc.models.*;
 import com.rentaloc.services.JWTService;
 import com.rentaloc.services.UsersService;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,9 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.MessageDigest;
-
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200/")
@@ -46,7 +38,7 @@ public class LoginController {
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest user) {
         try {
             Authentication authenticate = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+                    .authenticate(new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword()));
 
             User autendicatedUser = (User) authenticate.getPrincipal();
 
@@ -58,8 +50,7 @@ public class LoginController {
             return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException ex) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED).build();
+            return null;
         }
     }
 

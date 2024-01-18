@@ -4,17 +4,13 @@ import java.util.List;
 
 public class RentalsResponse {
 
-    private List<Rentals> rentals;
+    private List<RentalToDisplay> rentals;
 
-    public List<Rentals> getRentals() {
+    public List<RentalToDisplay> getRentals() {
         return rentals;
     }
 
-    public void setRentals(List<Rentals> rentals) {
-        this.rentals = rentals;
-    }
-
-    public RentalsResponse(List<Rentals> rentals) {
+    public void setRentals(List<RentalToDisplay> rentals) {
         this.rentals = rentals;
     }
 }

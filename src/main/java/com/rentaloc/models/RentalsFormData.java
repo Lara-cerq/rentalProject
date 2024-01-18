@@ -3,9 +3,6 @@ package com.rentaloc.models;
 import jakarta.persistence.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class RentalsFormData {
 
     private Integer id;

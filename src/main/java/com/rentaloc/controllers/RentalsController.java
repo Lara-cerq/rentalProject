@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -34,9 +35,24 @@ public class RentalsController {
     @GetMapping("api/rentals")
     public RentalsResponse getAllRentals() {
         try {
+            RentalToDisplay rentalToDisplay= new RentalToDisplay();
+            List<RentalToDisplay> rentalsDisplayList= new ArrayList<>();
             List<Rentals> rentalsList = rentalsService.getAllRentals();
-
-            return new RentalsResponse(rentalsList);
+            for (Rentals rental : rentalsList) {
+                rentalToDisplay.setId(rental.getId());
+                rentalToDisplay.setName(rental.getName());
+                rentalToDisplay.setSurface(rental.getSurface());
+                rentalToDisplay.setPrice(rental.getPrice());
+                rentalToDisplay.setPicture(rental.getPicture());
+                rentalToDisplay.setDescription(rental.getDescription());
+                rentalToDisplay.setOwner_id(rental.getUsers().getId());
+                rentalToDisplay.setCreated_at(rental.getUsers().getCreated_at());
+                rentalToDisplay.setUpdated_at(rental.getUsers().getUpdated_at());
+                rentalsDisplayList.add(rentalToDisplay);
+            }
+            RentalsResponse rentalsResponse = new RentalsResponse();
+            rentalsResponse.setRentals(rentalsDisplayList);
+            return rentalsResponse;
         } catch (BadCredentialsException ex) {
             return null;
         }
@@ -46,7 +62,7 @@ public class RentalsController {
     public RentalToDisplay getRentalById(@PathVariable("id") Integer id) {
 
         try {
-            Rentals rentals= rentalsService.getById(id).get();
+            Rentals rentals= rentalsService.getById(id);
 
             RentalToDisplay rentalToDisplay= new RentalToDisplay();
             rentalToDisplay.setId(rentals.getId());
@@ -84,6 +100,7 @@ public class RentalsController {
             rentalNew.setDescription(rental.getDescription());
             rentalNew.setName(rental.getName());
             rentalNew.setPicture(filepath.toString());
+            System.out.println(filepath);
 
             rentalsService.addRental(rentalNew);
 
@@ -110,7 +127,7 @@ public class RentalsController {
 
         try {
 
-            Rentals updateRental = rentalsService.getById(id).get();
+            Rentals updateRental = rentalsService.getById(id);
             updateRental.setName(rentalDetails.getName());
             updateRental.setDescription(rentalDetails.getDescription());
             updateRental.setPrice(rentalDetails.getPrice());

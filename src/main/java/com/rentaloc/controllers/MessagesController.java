@@ -27,25 +27,25 @@ public class MessagesController {
     @Autowired
     private RentalsService rentalsService;
 
-    @RequestMapping(value="/api/messages/", method = RequestMethod.POST, consumes = "application/json")
-    public String addMessages(@RequestBody MessagesRequest messages) {
+    @RequestMapping(value="api/messages", method = RequestMethod.POST, produces =  { "application/json" })
+    public Response addMessages(@RequestBody MessagesRequest messages) {
         try {
 
             Messages messageNew= new Messages();
 
             messageNew.setMessage(messages.getMessage());
             messageNew.setUsers(usersService.findUsersById(messages.getUser_id()));
-            messageNew.setRentals(rentalsService.getById(messages.getRental_id()).get());
+            messageNew.setRentals(rentalsService.getById(messages.getRental_id()));
 
             messagesService.addMessages(messageNew);
 
            Response response = new Response("Message send with success");
-            return response.toString();
+            return response;
         } catch (BadCredentialsException ex) {
-            return "";
+            return null;
 
         } catch (Exception ex) {
-            return "";
+            return null;
         }
     }
 

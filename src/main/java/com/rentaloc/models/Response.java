@@ -8,6 +8,9 @@ public class Response {
         this.message = message;
     }
 
+    public String getMessage() {
+        return message;
+    }
 
     public Response(String message) {
         this.message = message;
