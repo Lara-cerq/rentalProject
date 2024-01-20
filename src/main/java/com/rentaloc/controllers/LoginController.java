@@ -34,29 +34,9 @@ public class LoginController {
         this.jwtService = jwtService;
     }
 
-    //Login Request permet de renvoyer le login et password dans le body du post
-//    @RequestMapping(value="/login", method = RequestMethod.POST, produces =  { "application/json" })
-//    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest user) {
-//        try {
-//
-//            Authentication authenticate = authenticationManager
-//                    .authenticate(new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword()));
-//
-//
-//            String token = jwtService.generateToken(authenticate);
-//            // login response permet de donner la réponse dans le body avec le format que l'on veut avec "token" : "le code du token"
-//            LoginResponse response = new LoginResponse();
-//            response.setToken(token);
-//
-//            return ResponseEntity.ok(response);
-//
-//        } catch (BadCredentialsException ex) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//    }
-
+    //Login Request permet de renvoyer le login et password dans le body
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest user) {
+    public ResponseEntity login(@RequestBody LoginRequest user) {
         try {
             Authentication authenticate = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
@@ -71,7 +51,7 @@ public class LoginController {
             return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException ex) {
-            return null;
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Response("error"));
         }
     }
 

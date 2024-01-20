@@ -90,18 +90,13 @@ public class RentalsController {
             byte[] imageContent = rental.getPicture().getBytes();
             Path filepath = Paths.get(publicDirectory.toString(), rental.getPicture().getOriginalFilename());
 
-
-            Cloudinary cloudinary = new Cloudinary("cloudinary://344757681628711:wmAlqMGlVc8Dx-u4tUvh4ySNnlo@dthhif8wt");
+            String envCloudinary = System.getenv("CLOUDINARY_URL");
+            Cloudinary cloudinary = new Cloudinary(envCloudinary);
 
             String urlImage = cloudinary.uploader() // Upload the file to Cloudinary using the Cloudinary uploader
-                    // The uploader().upload() method takes the file's bytes and the public ID as
-                    // parameters
-                    .upload(rental.getPicture().getBytes(),
-                            // It uploads the file to the Cloudinary service with the specified public ID.
-                            Map.of("public_id", UUID.randomUUID().toString()))
+                    .upload(rental.getPicture().getBytes(), Map.of("public_id", UUID.randomUUID().toString()))
                     .get("url") // Get the URL of the uploaded file from the response
                     .toString();
-
 
             Rentals rentalNew= new Rentals();
             rentalNew.setUsers(userLogged);
@@ -109,8 +104,7 @@ public class RentalsController {
             rentalNew.setPrice(rental.getPrice());
             rentalNew.setDescription(rental.getDescription());
             rentalNew.setName(rental.getName());
-            rentalNew.setPicture(urlImage); // a remplacer par le path de https
-            System.out.println(filepath);
+            rentalNew.setPicture(urlImage);
 
             rentalsService.addRental(rentalNew);
 

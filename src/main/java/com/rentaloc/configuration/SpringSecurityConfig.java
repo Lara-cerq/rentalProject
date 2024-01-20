@@ -25,11 +25,10 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableWebSecurity
 public class SpringSecurityConfig {
 
-    @Autowired
-    CustomUserDetailsService customUserDetailsService;
+    String jwtKey = System.getenv("SECURITY_JWT_SECRET");
 
     @Autowired
-    PropertiesConfig propertiesConfig;
+    CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -46,7 +45,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKey = new SecretKeySpec(this.propertiesConfig.getJwtKey().getBytes(), 0, this.propertiesConfig.getJwtKey().getBytes().length, "RSA");
+        SecretKeySpec secretKey = new SecretKeySpec(this.jwtKey.getBytes(), 0, this.jwtKey.getBytes().length, "RSA");
         return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS256).build();
     }
 
@@ -64,6 +63,6 @@ public class SpringSecurityConfig {
 
     @Bean
     public JwtEncoder jwtEncoder() {
-        return new NimbusJwtEncoder(new ImmutableSecret<>(this.propertiesConfig.getJwtKey().getBytes()));
+        return new NimbusJwtEncoder(new ImmutableSecret<>(this.jwtKey.getBytes()));
     }
 }
