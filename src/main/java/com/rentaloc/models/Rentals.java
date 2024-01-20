@@ -31,13 +31,6 @@ public class Rentals {
     @OneToMany(mappedBy = "rentals")
     private List<Messages> messagesList = new ArrayList<>();
 
-    @Transient
-    public String getPicuresImagePath() {
-        if (picture == null || id == null) return null;
-
-        return "/rental-photos/" + id + "/" + picture;
-    }
-
     public Users getUsers() {
         return users;
     }

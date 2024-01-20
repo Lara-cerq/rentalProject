@@ -1,17 +1,21 @@
 package com.rentaloc.controllers;
 
+import com.cloudinary.Cloudinary;
 import com.rentaloc.models.*;
 import com.rentaloc.services.RentalsService;
 import com.rentaloc.services.UsersService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -19,6 +23,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200/")
@@ -33,33 +39,27 @@ public class RentalsController {
     UsersService usersService;
 
     @GetMapping("api/rentals")
-    public RentalsResponse getAllRentals() {
+    public ResponseEntity<RentalsResponse> getAllRentals() {
         try {
-            RentalToDisplay rentalToDisplay= new RentalToDisplay();
-            List<RentalToDisplay> rentalsDisplayList= new ArrayList<>();
+            RentalsResponse rentalsResponse = new RentalsResponse();
+            List<RentalToDisplay> rentalsDisplayList = new ArrayList<>();
             List<Rentals> rentalsList = rentalsService.getAllRentals();
             for (Rentals rental : rentalsList) {
-                rentalToDisplay.setId(rental.getId());
-                rentalToDisplay.setName(rental.getName());
-                rentalToDisplay.setSurface(rental.getSurface());
-                rentalToDisplay.setPrice(rental.getPrice());
-                rentalToDisplay.setPicture(rental.getPicture());
-                rentalToDisplay.setDescription(rental.getDescription());
-                rentalToDisplay.setOwner_id(rental.getUsers().getId());
-                rentalToDisplay.setCreated_at(rental.getUsers().getCreated_at());
-                rentalToDisplay.setUpdated_at(rental.getUsers().getUpdated_at());
+                RentalToDisplay rentalToDisplay = new RentalToDisplay(rental.getId(),rental.getName(), rental.getSurface(),
+                rental.getPrice(),rental.getPicture(),rental.getDescription(),rental.getUsers().getId(),rental.getUsers().getCreated_at(),
+                rental.getUsers().getUpdated_at());
                 rentalsDisplayList.add(rentalToDisplay);
-            }
-            RentalsResponse rentalsResponse = new RentalsResponse();
+                }
             rentalsResponse.setRentals(rentalsDisplayList);
-            return rentalsResponse;
-        } catch (BadCredentialsException ex) {
-            return null;
+
+        return ResponseEntity.ok(rentalsResponse);
+    } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
     @GetMapping(value = "api/rentals/{id}", produces =  { "application/json" })
-    public RentalToDisplay getRentalById(@PathVariable("id") Integer id) {
+    public ResponseEntity<RentalToDisplay> getRentalById(@PathVariable("id") Integer id) {
 
         try {
             Rentals rentals= rentalsService.getById(id);
@@ -74,14 +74,14 @@ public class RentalsController {
             rentalToDisplay.setOwner_id(rentals.getUsers().getId());
             rentalToDisplay.setCreated_at(rentals.getUsers().getCreated_at());
             rentalToDisplay.setUpdated_at(rentals.getUsers().getUpdated_at());
-            return rentalToDisplay;
+            return ResponseEntity.ok(rentalToDisplay);
         } catch (BadCredentialsException ex) {
-            return null;
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
     @RequestMapping(value = "api/rentals", method = RequestMethod.POST, produces =  { "application/json" })
-    public String saveRentals(@ModelAttribute RentalsFormData rental){
+    public ResponseEntity<String> saveRentals(@ModelAttribute RentalsFormData rental){
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             Users userLogged= usersService.findUserByEmail(auth.getName());
@@ -89,9 +89,19 @@ public class RentalsController {
             Path publicDirectory = Paths.get( "picture").toAbsolutePath();
             byte[] imageContent = rental.getPicture().getBytes();
             Path filepath = Paths.get(publicDirectory.toString(), rental.getPicture().getOriginalFilename());
-            try (OutputStream os = Files.newOutputStream(filepath)) {
-                os.write(imageContent);
-            }
+
+
+            Cloudinary cloudinary = new Cloudinary("cloudinary://344757681628711:wmAlqMGlVc8Dx-u4tUvh4ySNnlo@dthhif8wt");
+
+            String urlImage = cloudinary.uploader() // Upload the file to Cloudinary using the Cloudinary uploader
+                    // The uploader().upload() method takes the file's bytes and the public ID as
+                    // parameters
+                    .upload(rental.getPicture().getBytes(),
+                            // It uploads the file to the Cloudinary service with the specified public ID.
+                            Map.of("public_id", UUID.randomUUID().toString()))
+                    .get("url") // Get the URL of the uploaded file from the response
+                    .toString();
+
 
             Rentals rentalNew= new Rentals();
             rentalNew.setUsers(userLogged);
@@ -99,31 +109,22 @@ public class RentalsController {
             rentalNew.setPrice(rental.getPrice());
             rentalNew.setDescription(rental.getDescription());
             rentalNew.setName(rental.getName());
-            rentalNew.setPicture(filepath.toString());
+            rentalNew.setPicture(urlImage); // a remplacer par le path de https
             System.out.println(filepath);
 
             rentalsService.addRental(rentalNew);
 
             Response response = new Response("Rental created!");
-            return response.toString();
+            return ResponseEntity.ok(response.toString());
         } catch (BadCredentialsException ex) {
-            return ("");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @GetMapping(
-            value = "/get-image",
-            produces = MediaType.IMAGE_JPEG_VALUE
-    )
-//    public @ResponseBody byte[] getImage(@RequestParam Integer id) throws IOException {
-//        Path imagePath = getImagePathFromDb(id);
-//        return Files.readAllBytes(imagePath);
-//    }
-
     @RequestMapping(value="api/rentals/{id}", method= RequestMethod.PUT, produces =  { "application/json" })
-    public String updateRentals(@PathVariable(required = true, name = "id") Integer id, @ModelAttribute RentalsForUpdateFormData rentalDetails) {
+    public ResponseEntity<String> updateRentals(@PathVariable(required = true, name = "id") Integer id, @ModelAttribute RentalsForUpdateFormData rentalDetails) {
 
         try {
 
@@ -135,9 +136,9 @@ public class RentalsController {
 
             rentalsService.updateRental(updateRental);
             Response response= new Response("Rental updated!");
-            return response.toString();
+            return ResponseEntity.ok(response.toString());
         } catch (BadCredentialsException ex) {
-            return "";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 }

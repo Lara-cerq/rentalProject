@@ -28,7 +28,8 @@ public class SpringSecurityConfig {
     @Autowired
     CustomUserDetailsService customUserDetailsService;
 
-    private String jwtKey = "H8dhT9s1LXyFaL2GL1eY1gJxOIuy57aO";
+    @Autowired
+    PropertiesConfig propertiesConfig;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -45,7 +46,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKey = new SecretKeySpec(this.jwtKey.getBytes(), 0, this.jwtKey.getBytes().length, "RSA");
+        SecretKeySpec secretKey = new SecretKeySpec(this.propertiesConfig.getJwtKey().getBytes(), 0, this.propertiesConfig.getJwtKey().getBytes().length, "RSA");
         return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS256).build();
     }
 
@@ -63,6 +64,6 @@ public class SpringSecurityConfig {
 
     @Bean
     public JwtEncoder jwtEncoder() {
-        return new NimbusJwtEncoder(new ImmutableSecret<>(this.jwtKey.getBytes()));
+        return new NimbusJwtEncoder(new ImmutableSecret<>(this.propertiesConfig.getJwtKey().getBytes()));
     }
 }

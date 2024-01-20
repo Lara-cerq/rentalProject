@@ -97,6 +97,23 @@ public class RentalToDisplay {
         return updated_at;
     }
 
+    public RentalToDisplay() {
+        super();
+    }
+
+
+    public RentalToDisplay(Integer id, String name, Double surface, Double price, String picture, String description, Integer owner_id, Date created_at, Date updated_at) {
+        this.id = id;
+        this.name = name;
+        this.surface = surface;
+        this.price = price;
+        this.picture = picture;
+        this.description = description;
+        this.owner_id = owner_id;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+    }
+
     @Override
     public String toString() {
         return "{" +

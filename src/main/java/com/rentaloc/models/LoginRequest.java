@@ -2,16 +2,16 @@ package com.rentaloc.models;
 
 public class LoginRequest {
 
-    private String login;
+    private String email;
 
     private String password;
 
-    public String getLogin() {
-        return login;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

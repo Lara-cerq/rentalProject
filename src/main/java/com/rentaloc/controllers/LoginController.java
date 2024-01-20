@@ -5,6 +5,7 @@ import com.rentaloc.services.JWTService;
 import com.rentaloc.services.UsersService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,11 +35,31 @@ public class LoginController {
     }
 
     //Login Request permet de renvoyer le login et password dans le body du post
+//    @RequestMapping(value="/login", method = RequestMethod.POST, produces =  { "application/json" })
+//    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest user) {
+//        try {
+//
+//            Authentication authenticate = authenticationManager
+//                    .authenticate(new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword()));
+//
+//
+//            String token = jwtService.generateToken(authenticate);
+//            // login response permet de donner la réponse dans le body avec le format que l'on veut avec "token" : "le code du token"
+//            LoginResponse response = new LoginResponse();
+//            response.setToken(token);
+//
+//            return ResponseEntity.ok(response);
+//
+//        } catch (BadCredentialsException ex) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//        }
+//    }
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest user) {
         try {
             Authentication authenticate = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(user.getLogin(), user.getPassword()));
+                    .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
             User autendicatedUser = (User) authenticate.getPrincipal();
 
@@ -55,7 +76,7 @@ public class LoginController {
     }
 
     @RequestMapping(value="/me", method = RequestMethod.GET, produces =  { "application/json" })
-    public UserResponse getUser( ) {
+    public ResponseEntity<UserResponse> getUser( ) {
         try {
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -68,15 +89,15 @@ public class LoginController {
             user.setEmail(userLogged.getEmail());
             user.setCreated_at(userLogged.getCreated_at());
             user.setUpdated_at(userLogged.getUpdated_at());
-            return user;
+            return ResponseEntity.ok(user);
 
         } catch (BadCredentialsException ex) {
-            return null;
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces =  { "application/json" } )
-    public LoginResponse addNeuwUser(@RequestBody RegisterRequest userRental) {
+    public ResponseEntity<LoginResponse> addNeuwUser(@RequestBody RegisterRequest userRental) {
        try {
             if ( usersService.findUserByEmail(userRental.getEmail()) ==null ) {
 
@@ -102,12 +123,12 @@ public class LoginController {
                 LoginResponse response = new LoginResponse();
                 response.setToken(token);
 
-                return response;
+                return ResponseEntity.ok(response);
             } else {
-                return null;
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
             }
         } catch (Exception e) {
-            return null;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
