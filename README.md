@@ -15,7 +15,11 @@
 > Create schema 'rental'
 
 ### Environment variables
-> Set username/password of MySQL and JWT Key and cloudinary url in your environment variables.
+> Set username/password of MySQL and JWT Key and cloudinary url in your environment variables:
+spring.datasource.password
+spring.datasource.username
+SECURITY_JWT_SECRET
+CLOUDINARY_URL
 
 ### Launch project
 #### Backend project with Java
