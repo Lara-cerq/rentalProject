@@ -14,13 +14,18 @@
 > Open script.sql
 > Create schema 'rental'
 
+### Environment variables
+> Set username/password of MySQL and JWT Key and cloudinary url in your environment variables.
+
 ### Launch project
 #### Backend project with Java
 > Launch back end project with IntellIj or Eclipse and do maven clean/ install.
 > `Run application`. The application will reload in http://localhost:3001/.
+> 
 #### Front end project with Angular
 > Run ng serve for navigate to http://localhost:4200/.
 > Run ng build to build the project. The build artifacts will be stored in the dist/ directory.
+
 
 ### Swagger
 > Project is doccumented by Swagger : http://localhost:3001/swagger-ui/index.html
