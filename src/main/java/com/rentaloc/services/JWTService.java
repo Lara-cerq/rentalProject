@@ -25,6 +25,7 @@ public class JWTService {
     }
 
 
+    // génére le token
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()

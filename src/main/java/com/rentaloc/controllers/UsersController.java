@@ -24,8 +24,10 @@ public class UsersController {
     public UserResponse getUserById(@PathVariable("id") Integer id) {
 
         try {
+            // récupération de l'utilisateur par l'id
             Users user= usersService.findUsersById(id);
 
+            // UserResponse = DTO retourne les informations du user requises sans le password par exemple
             UserResponse userResponse = new UserResponse();
             userResponse.setId(user.getId());
             userResponse.setName(user.getName());

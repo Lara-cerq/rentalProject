@@ -34,17 +34,17 @@ public class LoginController {
         this.jwtService = jwtService;
     }
 
-    //Login Request permet de renvoyer le login et password dans le body
+    //Login Request= DTO qui permet d'envoyer le mail + passoword
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequest user) {
         try {
+            // verifie que le mail et le password existent dans la base de données
+            // si existe => on génére le token / sinon erreur 401 = unauthorized
             Authentication authenticate = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 
-            User autendicatedUser = (User) authenticate.getPrincipal();
-
             String token = jwtService.generateToken(authenticate);
-            // login response permet de donner la réponse dans le body avec le format que l'on veut avec "token" : "le code du token"
+            // login response = DTO qui permet d'afficher le token au format demandé
             LoginResponse response = new LoginResponse();
             response.setToken(token);
 
@@ -58,11 +58,13 @@ public class LoginController {
     @RequestMapping(value="/me", method = RequestMethod.GET, produces =  { "application/json" })
     public ResponseEntity<UserResponse> getUser( ) {
         try {
-
+            // permet d'avoir les données de la personne qui est connecté à partir du token
+            // si pas de token => erreur 401 unauthorized
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
+            // récupére la personne qui est connectée
             Users userLogged= usersService.findUserByEmail(auth.getName());
 
+            // UserResponse= DTO qui permet de créer un user au format que l'on veut l'afficher
             UserResponse user= new UserResponse();
             user.setId(userLogged.getId());
             user.setName(userLogged.getName());
@@ -79,27 +81,34 @@ public class LoginController {
     @RequestMapping(value = "/register", method = RequestMethod.POST, produces =  { "application/json" } )
     public ResponseEntity<LoginResponse> addNeuwUser(@RequestBody RegisterRequest userRental) {
        try {
+           // permet de vérifier si n'xiste pas dans la DB
+           // si n'existe pas => on va l'ajouter
+           // si existe deja => Exception : NON ACCEPTABLE
+           // si on ne peut pas ajouter un user alors BAD REQUEST
             if ( usersService.findUserByEmail(userRental.getEmail()) ==null ) {
 
                 String password = userRental.getPassword();
                 String encryptedPassword;
 
+                // encryptage du password
                 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                 encryptedPassword = encoder.encode(password);
 
+                // nouveau user crée
                 Users user = new Users();
                 user.setEmail(userRental.getEmail());
                 user.setName(userRental.getName());
                 user.setPassword(encryptedPassword);
+                // ajout de l'utilsateur
                 usersService.addNewUser(user);
 
+                //  permet d'avoir les informations du nouveau utilisateur afin de pouvoir envoyer le token
                 Authentication authenticate = authenticationManager
                         .authenticate(new UsernamePasswordAuthenticationToken(userRental.getEmail(), userRental.getPassword()));
 
-                User autendicatedUser = (User) authenticate.getPrincipal();
-
                 String token = jwtService.generateToken(authenticate);
 
+                // LoginResponse = DTO qui permet d'envoyer le token
                 LoginResponse response = new LoginResponse();
                 response.setToken(token);
 

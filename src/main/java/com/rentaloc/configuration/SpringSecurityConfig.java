@@ -25,6 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableWebSecurity
 public class SpringSecurityConfig {
 
+    // permet de récupérer  la variable d'environnement de la jwtKey
     String jwtKey = System.getenv("SECURITY_JWT_SECRET");
 
     @Autowired
@@ -33,13 +34,15 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(Customizer.withDefaults()) // activation du cors
+                .csrf(csrf -> csrf.disable()) // desactivation du csrf
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**","/v3/api-docs/**",
                         "/swagger-ui/**",
-                        "/swagger-ui.html").permitAll().anyRequest().authenticated())
-                .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
+                        "/swagger-ui.html").permitAll().anyRequest().authenticated()) // permet de customiser les endpoints  qui sont
+                                                                                    // autorisés sans autentification
+                .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())) // ressources supplementaires avec jwt
+                                                                                        // configuration pour le jeton JWT
                 .build();
     }
 
@@ -49,6 +52,7 @@ public class SpringSecurityConfig {
         return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS256).build();
     }
 
+    // methode qui permet d'aller verifier dans la DB les donnés des users
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
