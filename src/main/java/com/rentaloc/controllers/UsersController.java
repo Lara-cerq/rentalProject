@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UsersController {
 
     @Autowired
-    UsersService usersService;
+    private UsersService usersService;
 
     @GetMapping(value = "api/user/{id}", produces =  { "application/json" } )
     public UserResponse getUserById(@PathVariable("id") Integer id) {

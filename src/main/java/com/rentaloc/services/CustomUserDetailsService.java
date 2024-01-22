@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UsersRepository usersRepository;
 
-    // vérifie dans la DB les données des users
+    // crée un user avec le mail et password pour aller verifier si existe dans DB
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Users userRental = usersRepository.findUserByEmail(email);

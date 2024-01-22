@@ -13,7 +13,7 @@ import java.util.Optional;
 public class RentalsService {
 
     @Autowired
-    RentalsRepository rentalsRepository;
+    private RentalsRepository rentalsRepository;
 
     public List<Rentals> getAllRentals() {
         return rentalsRepository.findAll();

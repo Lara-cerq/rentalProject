@@ -29,14 +29,14 @@ public class SpringSecurityConfig {
     String jwtKey = System.getenv("SECURITY_JWT_SECRET");
 
     @Autowired
-    CustomUserDetailsService customUserDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(Customizer.withDefaults()) // activation du cors
                 .csrf(csrf -> csrf.disable()) // desactivation du csrf
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // gestion de session sans etat
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**","/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html").permitAll().anyRequest().authenticated()) // permet de customiser les endpoints  qui sont
@@ -52,7 +52,7 @@ public class SpringSecurityConfig {
         return NimbusJwtDecoder.withSecretKey(secretKey).macAlgorithm(MacAlgorithm.HS256).build();
     }
 
-    // methode qui permet d'aller verifier dans la DB les donnés des users
+    // methode qui permet d'aller verifier dans la DB les données des users
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder bCryptPasswordEncoder) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);

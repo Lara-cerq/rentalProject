@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Auth", description = "Contains the operations that allows to login, register an user and get informations of user logged.")
 public class LoginController {
 
+    @Autowired
     private JWTService jwtService;
 
     @Autowired
@@ -29,10 +30,6 @@ public class LoginController {
 
     @Autowired
     private UsersService usersService;
-
-    public LoginController(JWTService jwtService) {
-        this.jwtService = jwtService;
-    }
 
     //Login Request= DTO qui permet d'envoyer le mail + passoword
     @PostMapping("/login")

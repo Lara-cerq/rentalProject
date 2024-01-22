@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class UsersService {
 
     @Autowired
-    UsersRepository usersRepository;
+    private UsersRepository usersRepository;
 
     public Users addNewUser(Users user) {
         return usersRepository.save(user);

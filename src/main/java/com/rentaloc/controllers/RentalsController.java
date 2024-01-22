@@ -27,10 +27,10 @@ import java.util.UUID;
 public class RentalsController {
 
     @Autowired
-    RentalsService rentalsService;
+    private RentalsService rentalsService;
 
     @Autowired
-    UsersService usersService;
+    private UsersService usersService;
 
     @GetMapping("api/rentals")
     public ResponseEntity<RentalsResponse> getAllRentals() {

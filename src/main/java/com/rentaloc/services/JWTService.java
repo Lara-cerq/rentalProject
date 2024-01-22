@@ -1,5 +1,6 @@
 package com.rentaloc.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -18,12 +19,8 @@ import static java.lang.String.format;
 @Service
 public class JWTService {
 
+    @Autowired
     private JwtEncoder jwtEncoder;
-
-    public JWTService(JwtEncoder jwtEncoder) {
-        this.jwtEncoder = jwtEncoder;
-    }
-
 
     // génére le token
     public String generateToken(Authentication authentication) {
