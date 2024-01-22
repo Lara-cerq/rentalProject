@@ -14,6 +14,11 @@
 > Open script.sql
 > Create schema 'rental'
 
+### Cloudinary account
+> Create an cloudinary account
+> Got to dashboard>Api Environment variable and copy the CLOUDINARY_URL to your environment variables for your system
+> More informations : https://cloudinary.com/documentation/java_quickstart 
+
 ### Environment variables
 > Set username/password of MySQL and JWT Key and cloudinary url in your environment variables:
 spring.datasource.password
